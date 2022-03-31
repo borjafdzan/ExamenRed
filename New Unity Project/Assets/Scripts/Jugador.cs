@@ -6,20 +6,39 @@ using UnityEngine;
 public class Jugador : NetworkBehaviour
 {
     Renderer renderizador;
+    public static int numeroJugadoresEquipo1 = 0;
+    public static int numeroJugadoresEquipo2 = 0; 
     NetworkVariable<Vector3> posicionJugador = new NetworkVariable<Vector3>(); 
     NetworkVariable<Color> colorJugador = new NetworkVariable<Color>();
+    //Este entero representa al equipo al que pertenece el jugador 
+    //0 el jugador no tiene equipo
+    //1 el jugador es del equipo1
+    //2 el jugador es del equipo2
+    NetworkVariable<int> equipo = new NetworkVariable<int>(-1);
 
     void Start()
     {
         this.renderizador = GetComponent<Renderer>();
         this.posicionJugador.OnValueChanged += OnCambioPosicionJugador;
         this.colorJugador.OnValueChanged += OnCambiarColorJugador;
+        this.equipo.OnValueChanged += OnCambioEquipo;
 
         if (IsOwner){
             PosicionAleatoriaJugadorInicioServerRpc();
         } {
             this.renderizador.material.SetColor("_Color", colorJugador.Value); 
         }
+    }
+
+    private void OnCambioEquipo(int valorAnterior, int nuevoEquipo)
+    {
+        if (nuevoEquipo == 1){
+            numeroJugadoresEquipo1++;
+        } else if (nuevoEquipo == 2){
+            numeroJugadoresEquipo2++;
+        }
+        Debug.Log("El numero de jugadores del equipo 1 es " + numeroJugadoresEquipo1);
+        Debug.Log("El numero de jugadores del equipo 2 es " + numeroJugadoresEquipo2);
     }
 
     private void OnCambiarColorJugador(Color colorAnterior, Color nuevoColor)
@@ -42,12 +61,14 @@ public class Jugador : NetworkBehaviour
         Vector3 posicionAleatoriaIzquierda = new Vector3(Random.Range(-5, 5), 0, Random.Range(-2, -5));
         this.posicionJugador.Value = posicionAleatoriaIzquierda;
         this.colorJugador.Value = Color.blue;
+        this.equipo.Value = 1;
     }
     [ServerRpc]
     public void PosicionAleatoriaJugadorEquipo2ServerRpc(ServerRpcParams parametros = default){
         Vector3 posicionAleatoriaDerecha = new Vector3(Random.Range(-5, 5), 0, Random.Range(2, 5));
         this.posicionJugador.Value = posicionAleatoriaDerecha;
         this.colorJugador.Value = Color.red;
+        this.equipo.Value = 2;
     }
     [ServerRpc]
     public void PosicionAleatoriaJugadorSinEquipoServerRpc(ServerRpcParams parametros = default){
