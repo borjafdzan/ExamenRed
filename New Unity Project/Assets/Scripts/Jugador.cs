@@ -7,8 +7,8 @@ public class Jugador : NetworkBehaviour
 {
     Renderer renderizador;
     public static int numeroJugadoresEquipo1 = 0;
-    public static int numeroJugadoresEquipo2 = 0; 
-    NetworkVariable<Vector3> posicionJugador = new NetworkVariable<Vector3>(); 
+    public static int numeroJugadoresEquipo2 = 0;
+    NetworkVariable<Vector3> posicionJugador = new NetworkVariable<Vector3>();
     NetworkVariable<Color> colorJugador = new NetworkVariable<Color>();
     //Este entero representa al equipo al que pertenece el jugador 
     //0 el jugador no tiene equipo
@@ -23,22 +23,25 @@ public class Jugador : NetworkBehaviour
         this.colorJugador.OnValueChanged += OnCambiarColorJugador;
         this.equipo.OnValueChanged += OnCambioEquipo;
 
-        if (IsOwner){
+        if (IsOwner)
+        {
             PosicionAleatoriaJugadorInicioServerRpc();
-        } {
-            this.renderizador.material.SetColor("_Color", colorJugador.Value); 
+        }
+        {
+            this.renderizador.material.SetColor("_Color", colorJugador.Value);
         }
     }
 
     private void OnCambioEquipo(int valorAnterior, int nuevoEquipo)
     {
-        if (nuevoEquipo == 1){
+        if (nuevoEquipo == 1)
+        {
             numeroJugadoresEquipo1++;
-        } else if (nuevoEquipo == 2){
+        }
+        else if (nuevoEquipo == 2)
+        {
             numeroJugadoresEquipo2++;
         }
-        Debug.Log("El numero de jugadores del equipo 1 es " + numeroJugadoresEquipo1);
-        Debug.Log("El numero de jugadores del equipo 2 es " + numeroJugadoresEquipo2);
     }
 
     private void OnCambiarColorJugador(Color colorAnterior, Color nuevoColor)
@@ -52,32 +55,49 @@ public class Jugador : NetworkBehaviour
     }
 
     [ServerRpc]
-    public void PosicionAleatoriaJugadorInicioServerRpc(ServerRpcParams parametros = default){
+    public void PosicionAleatoriaJugadorInicioServerRpc(ServerRpcParams parametros = default)
+    {
         this.posicionJugador.Value = DevolverPosicionAleatoriaCentroPlano();
     }
-    
+
     [ServerRpc]
-    public void PosicionAleatoriaJugadorEquipo1ServerRpc(ServerRpcParams parametros = default){
-        Vector3 posicionAleatoriaIzquierda = new Vector3(Random.Range(-5, 5), 0, Random.Range(-2, -5));
-        this.posicionJugador.Value = posicionAleatoriaIzquierda;
-        this.colorJugador.Value = Color.blue;
-        this.equipo.Value = 1;
+    public void PosicionAleatoriaJugadorEquipo1ServerRpc(ServerRpcParams parametros = default)
+    {
+        if (Jugador.numeroJugadoresEquipo1 < 2)
+        {
+            Vector3 posicionAleatoriaIzquierda = new Vector3(Random.Range(-5, 5), 0, Random.Range(-2, -5));
+            this.posicionJugador.Value = posicionAleatoriaIzquierda;
+            this.colorJugador.Value = Color.blue;
+            this.equipo.Value = 1;
+        } else {
+            Debug.Log("No se puede asignar el jugador al equipo 1 porque esta lleno");
+        }
     }
     [ServerRpc]
-    public void PosicionAleatoriaJugadorEquipo2ServerRpc(ServerRpcParams parametros = default){
-        Vector3 posicionAleatoriaDerecha = new Vector3(Random.Range(-5, 5), 0, Random.Range(2, 5));
-        this.posicionJugador.Value = posicionAleatoriaDerecha;
-        this.colorJugador.Value = Color.red;
-        this.equipo.Value = 2;
+    public void PosicionAleatoriaJugadorEquipo2ServerRpc(ServerRpcParams parametros = default)
+    {
+        if (Jugador.numeroJugadoresEquipo2 < 2)
+        {
+            Vector3 posicionAleatoriaDerecha = new Vector3(Random.Range(-5, 5), 0, Random.Range(2, 5));
+            this.posicionJugador.Value = posicionAleatoriaDerecha;
+            this.colorJugador.Value = Color.red;
+            this.equipo.Value = 2;
+        }
+        else
+        {
+            Debug.Log("no se puede asignar el jugador al equipo 2 porque esta lleno");
+        }
     }
     [ServerRpc]
-    public void PosicionAleatoriaJugadorSinEquipoServerRpc(ServerRpcParams parametros = default){
+    public void PosicionAleatoriaJugadorSinEquipoServerRpc(ServerRpcParams parametros = default)
+    {
         Vector3 posicionAleatoriaCentral = new Vector3(Random.Range(-5, 5), 0, Random.Range(1.5f, 1.5f));
         this.posicionJugador.Value = posicionAleatoriaCentral;
         this.colorJugador.Value = Color.white;
     }
-    private Vector3 DevolverPosicionAleatoriaCentroPlano(){
+    private Vector3 DevolverPosicionAleatoriaCentroPlano()
+    {
         return new Vector3(Random.Range(-2, 2), 0, Random.Range(-2, 2));
     }
-    
+
 }
