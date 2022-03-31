@@ -7,7 +7,7 @@ public class Jugador : NetworkBehaviour
 {
     Renderer renderizador;
     NetworkVariable<Vector3> posicionJugador = new NetworkVariable<Vector3>(); 
-    NetworkVariable<Color> colorJugador = new NetworkVariable<Color>(new Color(1, 1, 1, 1));
+    NetworkVariable<Color> colorJugador = new NetworkVariable<Color>();
 
     void Start()
     {
@@ -33,7 +33,7 @@ public class Jugador : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void PosicionAleatoriaJugadorInicioServerRpc(ServerRpcParams parametros = default){
+    public void PosicionAleatoriaJugadorInicioServerRpc(ServerRpcParams parametros = default){
         this.posicionJugador.Value = DevolverPosicionAleatoriaCentroPlano();
     }
     
@@ -49,7 +49,14 @@ public class Jugador : NetworkBehaviour
         this.posicionJugador.Value = posicionAleatoriaDerecha;
         this.colorJugador.Value = Color.red;
     }
-    private Vector3 DevolverPosicionAleatoriaCentroPlano(){
-        return new Vector3(Random.Range(-5, 5), 0, Random.Range(-1, 1));
+    [ServerRpc]
+    public void PosicionAleatoriaJugadorSinEquipoServerRpc(ServerRpcParams parametros = default){
+        Vector3 posicionAleatoriaCentral = new Vector3(Random.Range(-5, 5), 0, Random.Range(1.5f, 1.5f));
+        this.posicionJugador.Value = posicionAleatoriaCentral;
+        this.colorJugador.Value = Color.white;
     }
+    private Vector3 DevolverPosicionAleatoriaCentroPlano(){
+        return new Vector3(Random.Range(-2, 2), 0, Random.Range(-2, 2));
+    }
+    
 }

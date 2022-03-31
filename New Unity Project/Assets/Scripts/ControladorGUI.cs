@@ -38,6 +38,8 @@ public class ControladorGUI : MonoBehaviour
     }
     public void OnClickEquipoSinEquipo()
     {
-
+        NetworkObject playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
+        Jugador jugador = playerObject.GetComponent<Jugador>();
+        jugador.PosicionAleatoriaJugadorSinEquipoServerRpc();
     }
 }
