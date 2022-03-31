@@ -73,7 +73,7 @@ public class Jugador : NetworkBehaviour
     [ServerRpc]
     public void PosicionAleatoriaJugadorEquipo1ServerRpc(ServerRpcParams parametros = default)
     {
-        if (Jugador.numeroJugadoresEquipo1 < 2)
+        if (Jugador.numeroJugadoresEquipo1 < 2 || equipo.Value == 1)
         {
             Vector3 posicionAleatoriaIzquierda = new Vector3(Random.Range(-5, 5), 0, Random.Range(-2, -5));
             this.posicionJugador.Value = posicionAleatoriaIzquierda;
@@ -88,7 +88,7 @@ public class Jugador : NetworkBehaviour
     [ServerRpc]
     public void PosicionAleatoriaJugadorEquipo2ServerRpc(ServerRpcParams parametros = default)
     {
-        if (Jugador.numeroJugadoresEquipo2 < 2)
+        if (Jugador.numeroJugadoresEquipo2 < 2 || equipo.Value== 2)
         {
             Vector3 posicionAleatoriaDerecha = new Vector3(Random.Range(-5, 5), 0, Random.Range(2, 5));
             this.posicionJugador.Value = posicionAleatoriaDerecha;
